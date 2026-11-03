@@ -2,7 +2,7 @@
   "name": "visual-memory-lab",
   "private": true,
   "scripts": {
-    "test": "node --test tests/access.test.js"
+    "test": "node --test tests/*.test.js"
   },
   "engines": {
     "node": ">=22"
