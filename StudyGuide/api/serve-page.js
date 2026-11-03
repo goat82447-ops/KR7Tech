@@ -10,8 +10,6 @@ const PROTECTED_PAGES = new Set([
   "DSA.html",
   "How AI work.html",
   "Project.html",
-  "C#Dotnet.html",
-  "DSA.html",
 ]);
 
 function sessionCookie(req) {
@@ -48,13 +46,18 @@ module.exports = async function handler(req, res) {
     const file = candidates.find(candidate => fs.existsSync(candidate));
     if (!file) return res.status(404).send("Page not found.");
 
+    const html = fs.readFileSync(file, "utf8");
+    const withManualLocks = html.includes("guide-locks.js")
+      ? html
+      : html.replace(/<\/body>/i, '  <script src="/guide-locks.js" defer></script>\n</body>');
+
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Cache-Control", "private, no-store, max-age=0");
     res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet");
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");
-    return res.status(200).send(fs.readFileSync(file));
+    return res.status(200).send(withManualLocks);
   } catch (error) {
     return sendError(res, error);
   }
