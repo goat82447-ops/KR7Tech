@@ -1,0 +1,1206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>How AI Works: Generative AI to Agentic AI</title>
+    <style>
+      :root {
+        --bg: #06101d;
+        --panel: #10253a;
+        --panel2: #16354f;
+        --cyan: #64e7ff;
+        --gold: #ffd166;
+        --green: #68e6a7;
+        --muted: #adc3d7;
+        --red: #ff8b9d;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at 15% 0, #173e68, transparent 34%), var(--bg);
+        color: #f4f8ff;
+        font:
+          15px Segoe UI,
+          Arial,
+          sans-serif;
+      }
+      .app {
+        display: grid;
+        grid-template-columns: 285px 1fr;
+        min-height: 100vh;
+      }
+      .side {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: auto;
+        padding: 22px 15px;
+        background: #071522;
+        border-right: 1px solid #294a63;
+      }
+      .brand {
+        font-size: 24px;
+        font-weight: 900;
+      }
+      .brand b {
+        color: var(--cyan);
+      }
+      .muted {
+        color: var(--muted);
+        line-height: 1.55;
+      }
+      .nav button,
+      .controls button,
+      .controls input {
+        background: #0a1b2b;
+        color: #fff;
+        border: 1px solid #3b6685;
+        border-radius: 10px;
+        padding: 11px;
+      }
+      .nav button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        margin: 6px 0;
+      }
+      .nav button.active {
+        background: #153b58;
+        color: var(--cyan);
+      }
+      main {
+        padding: 28px;
+        max-width: 1500px;
+      }
+      .hero {
+        padding: 30px;
+        border: 1px solid #3e7093;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #075985, #4d2b7f);
+      }
+      h1 {
+        font-size: clamp(31px, 5vw, 56px);
+        margin: 0;
+      }
+      .journey {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 22px 0;
+      }
+      .journey span {
+        padding: 10px 12px;
+        background: #08192a;
+        border: 1px solid #3c6785;
+        border-radius: 11px;
+        animation: float 3s ease-in-out infinite;
+      }
+      .journey span:nth-child(2n) {
+        animation-delay: 0.4s;
+      }
+      @keyframes float {
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+      .controls {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+      }
+      .controls input {
+        flex: 1;
+        min-width: 220px;
+      }
+      .section {
+        margin-top: 30px;
+      }
+      .section h2 {
+        color: var(--cyan);
+        margin-bottom: 4px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(325px, 1fr));
+        gap: 15px;
+      }
+      .card {
+        background: linear-gradient(180deg, var(--panel2), var(--panel));
+        border: 1px solid #315875;
+        border-radius: 17px;
+        padding: 17px;
+        transition: 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        border-color: #5f9cc2;
+      }
+      .card h3 {
+        margin: 0 0 8px;
+      }
+      .why {
+        color: var(--gold);
+        font-weight: 700;
+      }
+      .diagram {
+        padding: 12px;
+        margin: 11px 0;
+        background: #071725;
+        border-radius: 11px;
+        text-align: center;
+        color: var(--cyan);
+        font-weight: 700;
+      }
+      .plain {
+        padding: 11px;
+        background: #211c0b;
+        border-left: 4px solid var(--gold);
+        border-radius: 8px;
+        line-height: 1.55;
+      }
+      .work {
+        padding: 11px;
+        margin-top: 9px;
+        background: #071827;
+        border-left: 4px solid var(--green);
+        border-radius: 8px;
+        line-height: 1.55;
+      }
+      .warning {
+        padding: 11px;
+        margin-top: 9px;
+        background: #25121a;
+        border-left: 4px solid var(--red);
+        border-radius: 8px;
+      }
+      .hide {
+        display: none;
+      }
+      .bigflow {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 8px;
+        margin: 16px 0;
+      }
+      .node {
+        padding: 14px;
+        text-align: center;
+        border-radius: 12px;
+        background: #0a1d30;
+        border: 1px solid #3c6988;
+      }
+      .sources {
+        margin-top: 32px;
+        padding: 18px;
+        background: #0b1b2b;
+        border-radius: 13px;
+        color: var(--muted);
+      }
+      @media (max-width: 850px) {
+        .app {
+          display: block;
+        }
+        .side {
+          position: relative;
+          height: auto;
+        }
+        .nav {
+          display: flex;
+          overflow: auto;
+        }
+        .nav button {
+          min-width: max-content;
+        }
+        main {
+          padding: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="side">
+        <div class="brand">AI <b>Visual Guide</b></div>
+        <p class="muted">
+          A learning artifact, not an interview guide. Follow the topics in
+          order.
+        </p>
+        <div id="nav" class="nav"></div>
+      </aside>
+      <main>
+        <section class="hero">
+          <h1>How AI Works</h1>
+          <p class="muted">
+            From basic AI and machine learning to Generative AI, RAG, MCP,
+            skills, tools, memory, planning, and autonomous agents.
+          </p>
+          <div class="journey">
+            <span>📊 Data</span><span>🧠 Model</span><span>✍️ Prompt</span
+            ><span>📚 RAG</span><span>🛠️ Tools</span><span>🔌 MCP</span
+            ><span>🤖 Agent</span><span>🛡️ Governance</span>
+          </div>
+          <div class="controls">
+            <input
+              id="search"
+              placeholder="Search any concept, for example MCP, RAG, skill, memory..."
+            /><button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
+              Back to top
+            </button>
+          </div>
+        </section>
+        <div id="content"></div>
+        <section class="section" id="realtime">
+          <h2>
+            🌍 Real-world Example: How GPT, Claude, and Copilot Give a Response
+          </h2>
+          <p class="muted">
+            Think of GPT or Claude as the reasoning engine, and Copilot as the
+            complete work assistant that surrounds a model with instructions,
+            work context, search, tools, security, and a user experience.
+          </p>
+          <div class="grid">
+            <article class="card">
+              <h3>Example request: “What failed in last night’s pipeline?”</h3>
+              <div class="why">
+                The user asks one sentence, but the system performs several
+                hidden steps.
+              </div>
+              <div class="diagram">
+                User → Copilot/App → Instructions → Context/Search → GPT or
+                Claude → Response
+              </div>
+              <div class="plain">
+                <b>Step 1: Receive the prompt.</b> The application collects the
+                user’s question, conversation context, identity, and system
+                instructions.
+              </div>
+              <div class="work">
+                <b>Step 2: Decide what is needed.</b> If the question can be
+                answered from supplied context, the model generates directly. If
+                current evidence is required, the application searches or uses a
+                tool.
+              </div>
+              <div class="warning">
+                <b>Important:</b> GPT and Claude are model families. Copilot is
+                an assistant or product experience that can use models together
+                with work data, search, tools, and safety controls.
+              </div>
+            </article>
+            <article class="card">
+              <h3>How the model creates the text</h3>
+              <div class="why">
+                A model does not write the full answer in one operation.
+              </div>
+              <div class="diagram">
+                Prompt → Tokens → Attention → Next-token probabilities →
+                Token-by-token answer
+              </div>
+              <div class="plain">
+                <b>Example:</b> After reading “The pipeline failed because…”,
+                the model estimates which next token is most suitable, selects
+                it, and repeats until the response is complete.
+              </div>
+              <div class="work">
+                <b>Result:</b> The response can sound natural because the model
+                learned language patterns, but fluency alone does not prove
+                correctness. Grounding and validation provide evidence.
+              </div>
+            </article>
+            <article class="card">
+              <h3>GPT vs Claude vs Copilot</h3>
+              <div class="why">
+                People often compare items from different layers.
+              </div>
+              <div class="diagram">
+                Model: GPT / Claude → Application: Copilot / Agent → Data and
+                Tools
+              </div>
+              <div class="plain">
+                <b>GPT:</b> A model family from OpenAI used for understanding
+                and generation.<br /><b>Claude:</b> A model family from
+                Anthropic used for understanding and generation.<br /><b
+                  >Copilot:</b
+                >
+                A Microsoft assistant experience that combines a model with
+                prompts, grounding, search, applications, and enterprise
+                controls.
+              </div>
+              <div class="work">
+                <b>Simple memory:</b> Model = engine. Copilot = complete car.
+                Agent = a car that can also choose a route and perform approved
+                work.
+              </div>
+            </article>
+          </div>
+        </section>
+        <section class="section" id="answerflow">
+          <h2>🔄 Three Response Flows</h2>
+          <div class="grid">
+            <article class="card">
+              <h3>Flow A: Generative AI response</h3>
+              <div class="why">
+                Used when the model can answer from the prompt and its learned
+                language patterns.
+              </div>
+              <div class="diagram">
+                “Explain dependency injection” → Model → Explanation
+              </div>
+              <div class="plain">
+                <b>What happens:</b> The prompt is tokenized, the model
+                interprets the context, and it generates the answer token by
+                token.
+              </div>
+              <div class="work">
+                <b>Good for:</b> Drafting, rewriting, brainstorming, summarizing
+                supplied text, and explaining general concepts.
+              </div>
+            </article>
+            <article class="card">
+              <h3>Flow B: Grounded RAG response</h3>
+              <div class="why">
+                Used when the answer must come from current or private
+                knowledge.
+              </div>
+              <div class="diagram">
+                Question → Rewrite → Search → Retrieve evidence → Model → Answer
+                + citations
+              </div>
+              <div class="plain">
+                <b>Example:</b> “What is our rollback procedure?” The system
+                searches authorized team documentation, retrieves the most
+                relevant sections, provides them to the model, and asks it to
+                answer only from that evidence.
+              </div>
+              <div class="work">
+                <b>Good for:</b> Policies, runbooks, project documentation,
+                product knowledge, and enterprise Q&amp;A.
+              </div>
+            </article>
+            <article class="card">
+              <h3>Flow C: Agentic response and action</h3>
+              <div class="why">
+                Used when a goal needs multiple decisions or real system
+                actions.
+              </div>
+              <div class="diagram">
+                Goal → Plan → Search/Tool → Observe → Next action → Verify →
+                Respond
+              </div>
+              <div class="plain">
+                <b>Example:</b> “Investigate the failed pipeline and rerun only
+                if the failure is transient.” The agent gathers run data, reads
+                logs, retrieves the runbook, identifies the failure type, asks
+                for approval when required, triggers a rerun, and checks the
+                result.
+              </div>
+              <div class="work">
+                <b>Good for:</b> Support workflows, pipeline operations,
+                testing, ticket handling, and multistep business processes.
+              </div>
+            </article>
+          </div>
+        </section>
+        <section class="section" id="mcpserver">
+          <h2>🔌 MCP Server, Client, Host, Tools, and Skills</h2>
+          <p class="muted">
+            MCP does not replace the model, RAG, or APIs. It gives an AI
+            application a standard method to discover and call approved
+            capabilities.
+          </p>
+          <div class="grid">
+            <article class="card">
+              <h3>MCP architecture</h3>
+              <div class="why">
+                Without a common protocol, every AI application needs custom
+                integration code for every system.
+              </div>
+              <div class="diagram">
+                Host App → MCP Client ↔ MCP Server → API / Database / Files /
+                Azure DevOps
+              </div>
+              <div class="plain">
+                <b>Host:</b> The user-facing application, such as an agent app
+                or supported Copilot experience.<br /><b>Client:</b> The
+                component inside the host that connects using MCP.<br /><b
+                  >Server:</b
+                >
+                The service that publishes available tools, resources, and
+                prompts.<br /><b>Backend:</b> The real API, database, file
+                store, or enterprise system.
+              </div>
+              <div class="work">
+                <b>Memory:</b> MCP server is a controlled adapter. It describes
+                each capability using a name, description, inputs, and outputs
+                so the agent can select it.
+              </div>
+            </article>
+            <article class="card">
+              <h3>Real example: Azure DevOps MCP server</h3>
+              <div class="why">
+                The agent needs live pipeline information and approved actions.
+              </div>
+              <div class="diagram">
+                Agent → list_pipeline_runs → get_logs → trigger_pipeline → Azure
+                DevOps
+              </div>
+              <div class="plain">
+                <b>Published tools might be:</b> get pipeline runs, fetch logs,
+                read work items, and trigger an approved pipeline. The model
+                chooses a tool; the runtime validates identity and arguments;
+                the MCP server calls Azure DevOps; the structured result goes
+                back to the model.
+              </div>
+              <div class="work">
+                <b>Security boundary:</b> The model proposes the call. The
+                application and server enforce authentication, authorization,
+                validation, approval, timeout, and audit.
+              </div>
+            </article>
+            <article class="card">
+              <h3>Resource vs Tool vs Prompt vs Skill</h3>
+              <div class="why">These terms solve different needs.</div>
+              <div class="diagram">
+                Resource = Read | Tool = Act | Prompt = Template | Skill =
+                Playbook
+              </div>
+              <div class="plain">
+                <b>Resource:</b> Data the agent can read, such as a runbook or
+                API response.<br /><b>Tool:</b> An operation, such as fetch logs
+                or trigger a pipeline.<br /><b>Prompt:</b> A reusable
+                instruction template.<br /><b>Skill:</b> A repeatable procedure
+                that tells the agent how to combine instructions and tools to
+                complete a job.
+              </div>
+              <div class="work">
+                <b>Example skill:</b> “Pipeline failure investigation” can
+                define steps, required evidence, allowed tools, approval rules,
+                stop conditions, and output format.
+              </div>
+            </article>
+          </div>
+        </section>
+        <section class="section" id="evolution">
+          <h2>🚀 How Agentic AI Evolved</h2>
+          <div class="bigflow">
+            <div class="node">1. Rules<br />Fixed logic</div>
+            <div class="node">2. ML<br />Predict</div>
+            <div class="node">3. GenAI<br />Create</div>
+            <div class="node">4. RAG<br />Know</div>
+            <div class="node">5. Tools<br />Act</div>
+            <div class="node">6. Agent<br />Decide</div>
+            <div class="node">7. Multi-agent<br />Collaborate</div>
+          </div>
+          <div class="grid">
+            <article class="card">
+              <h3>Why Generative AI was not enough</h3>
+              <div class="why">
+                A chatbot could explain what to do but could not reliably access
+                live systems, perform the work, or verify the outcome.
+              </div>
+              <div class="diagram">
+                Prompt → Helpful text, but no real action
+              </div>
+              <div class="plain">
+                <b>Limitations:</b> stale knowledge, hallucination, no private
+                data by default, no real-time state, no application permissions,
+                and no multistep execution control.
+              </div>
+              <div class="work">
+                <b>Next step:</b> RAG added trusted knowledge, tools added
+                actions, memory added continuity, and orchestration added
+                decision loops.
+              </div>
+            </article>
+            <article class="card">
+              <h3>What makes a system agentic?</h3>
+              <div class="why">
+                The system works toward a goal instead of generating only one
+                response.
+              </div>
+              <div class="diagram">
+                Goal + Model + Instructions + Knowledge + Tools + Memory + Loop
+                + Guardrails
+              </div>
+              <div class="plain">
+                <b>Agentic behavior:</b> understand the goal, create or choose
+                steps, call tools, inspect results, adapt the plan, ask for
+                missing information or approval, verify success, and stop.
+              </div>
+              <div class="work">
+                <b>Not every task needs an agent.</b> Use a direct model call
+                for simple generation, RAG for knowledge answers, a
+                deterministic workflow for predictable automation, and an agent
+                when dynamic decisions are truly required.
+              </div>
+            </article>
+          </div>
+        </section>
+        <section class="section" id="achieve">
+          <h2>🧱 How We Can Build It, Step by Step</h2>
+          <div class="grid">
+            <article class="card">
+              <h3>Level 1: Build a useful GenAI assistant</h3>
+              <div class="diagram">UI → Model API → Prompt → Response</div>
+              <div class="plain">
+                Choose one narrow use case, select a suitable model, define
+                system instructions, send the prompt, validate the response, and
+                capture feedback.
+              </div>
+              <div class="work">
+                <b>Example:</b> Convert a production issue description into a
+                structured ticket draft.
+              </div>
+            </article>
+            <article class="card">
+              <h3>Level 2: Add enterprise knowledge with RAG</h3>
+              <div class="diagram">
+                Documents → Chunk → Embed → Index → Retrieve → Generate
+              </div>
+              <div class="plain">
+                Connect authorized sources, preserve permissions and metadata,
+                create an ingestion pipeline, implement keyword/vector/hybrid
+                retrieval, add citations, and evaluate retrieval and
+                groundedness.
+              </div>
+              <div class="work">
+                <b>Example:</b> Answer support questions from runbooks and
+                previous issue documentation.
+              </div>
+            </article>
+            <article class="card">
+              <h3>Level 3: Add one safe tool</h3>
+              <div class="diagram">
+                Model selects tool → Validate → Approve if needed → Execute →
+                Return result
+              </div>
+              <div class="plain">
+                Start with a read-only tool, give it a narrow schema, use least
+                privilege, validate arguments, set timeouts, log every call, and
+                return structured errors.
+              </div>
+              <div class="work">
+                <b>Example:</b> Retrieve the latest pipeline status before
+                enabling any rerun action.
+              </div>
+            </article>
+            <article class="card">
+              <h3>Level 4: Add an MCP server</h3>
+              <div class="diagram">
+                Agent Host → MCP Client → MCP Server → Several approved systems
+              </div>
+              <div class="plain">
+                Define the capabilities, wrap existing APIs as focused
+                tools/resources, implement identity and authorization, publish
+                schemas, add telemetry, test with invalid and malicious inputs,
+                and version the server.
+              </div>
+              <div class="work">
+                <b>Example:</b> One engineering MCP server exposes pipeline,
+                repository, work-item, and test-result capabilities.
+              </div>
+            </article>
+            <article class="card">
+              <h3>Level 5: Add agent orchestration</h3>
+              <div class="diagram">
+                Goal → Plan → Tool loop → Human gate → Verification → Finish
+              </div>
+              <div class="plain">
+                Define the goal and success criteria, available tools, maximum
+                steps, cost and time budgets, approval points, retry and
+                idempotency rules, stop conditions, memory policy, and
+                escalation path.
+              </div>
+              <div class="work">
+                <b>Example:</b> Diagnose a failed deployment, propose rollback,
+                wait for approval, execute it, and verify service health.
+              </div>
+            </article>
+            <article class="card">
+              <h3>Level 6: Productionize and improve</h3>
+              <div class="diagram">
+                Offline eval → Security review → Shadow → Canary → Monitor →
+                Rollback
+              </div>
+              <div class="plain">
+                Build scenario evaluations, inspect full traces, measure task
+                success, grounding, tool accuracy, safety, latency, and cost,
+                then release gradually with a kill switch.
+              </div>
+              <div class="work">
+                <b>Rule:</b> Version the model, prompt, knowledge index, tools,
+                MCP server, policies, and evaluations together.
+              </div>
+            </article>
+          </div>
+        </section>
+        <section class="section" id="endtoend">
+          <h2>🧪 Complete Example: Agentic E2E Test and Pipeline Support</h2>
+          <div class="grid">
+            <article class="card">
+              <h3>User goal</h3>
+              <div class="diagram">
+                “Run the voice E2E tests, investigate failures, and notify the
+                team.”
+              </div>
+              <div class="plain">
+                The request is a goal, not a single command. It requires
+                planning, several systems, evidence, decisions, and
+                verification.
+              </div>
+              <div class="work">
+                <b>Possible agents/skills:</b> Test Planner, Environment
+                Checker, Pipeline Executor, Failure Analyzer, Report Generator,
+                and Notification step.
+              </div>
+            </article>
+            <article class="card">
+              <h3>End-to-end journey</h3>
+              <div class="diagram">
+                Understand → Plan → Check environment → Trigger → Monitor →
+                Analyze → Retry/Escalate → Report
+              </div>
+              <div class="plain">
+                1. Retrieve test scope and runbook.<br />2. Check environment
+                readiness.<br />3. Ask approval if the run is costly or
+                production-impacting.<br />4. Trigger the approved pipeline
+                through a tool or MCP server.<br />5. Poll status and collect
+                logs/results.<br />6. Classify transient versus product/test
+                failure.<br />7. Retry only under policy and with duplicate
+                prevention.<br />8. Produce evidence-based summary and notify
+                the team.
+              </div>
+              <div class="work">
+                <b>Success means:</b> The requested tests ran, the result was
+                verified, failures have evidence, every action is audited, and
+                the user receives a clear final status.
+              </div>
+            </article>
+            <article class="card">
+              <h3>Guardrails</h3>
+              <div class="diagram">
+                Least privilege + Approval + Max retries + Timeout + Audit +
+                Human escalation
+              </div>
+              <div class="plain">
+                Use environment-scoped credentials, read-only tools by default,
+                explicit approval for risky actions, idempotency keys, bounded
+                retries, protected secrets, sensitive-data filtering, and
+                complete traces.
+              </div>
+              <div class="work">
+                <b>Final principle:</b> The model can recommend and select an
+                action, but trusted software must authorize, execute, and verify
+                it.
+              </div>
+            </article>
+          </div>
+        </section>
+        <div class="sources">
+          <b>Learning design:</b> Concepts are organized from foundation to
+          production. Each card answers four things: what it is, why it exists,
+          how it works, and where it fits.
+        </div>
+      </main>
+    </div>
+    <script>
+      const DATA = [
+        [
+          "AI Foundations",
+          "🏙️",
+          "AI is the complete city. Machine learning is the school that learns patterns, and deep learning is the neural factory.",
+          [
+            [
+              "Artificial Intelligence",
+              "Why: automate tasks that normally need human-like perception, language, prediction, or decision support.",
+              "AI is the broad field of building computer systems that perform intelligent tasks.",
+              "Input → Rules or Learned Model → Output",
+              "AI includes rule-based systems, machine learning, computer vision, language, speech, planning, and robotics.",
+            ],
+            [
+              "Machine Learning",
+              "Why: hand-written rules cannot cover every pattern in complex data.",
+              "Machine learning builds a model by learning relationships from examples.",
+              "Training Data → Algorithm → Model → Prediction",
+              "Training creates the model. Inference applies the trained model to new input.",
+            ],
+            [
+              "Deep Learning",
+              "Why: images, text, and audio contain complex patterns that are difficult to design manually.",
+              "Deep learning uses multi-layer neural networks to learn representations.",
+              "Raw Data → Neural Layers → Learned Features → Output",
+              "It powers many modern vision, speech, and language systems but requires data, compute, and evaluation.",
+            ],
+            [
+              "Predictive AI vs Generative AI",
+              "Why: some problems need a forecast, while others need new content.",
+              "Predictive AI estimates an outcome; Generative AI creates text, code, images, audio, or other content.",
+              "Predict → Label/Score | Generate → New Artifact",
+              "Choose based on the business outcome, not because GenAI is fashionable.",
+            ],
+          ],
+        ],
+        [
+          "Generative AI and LLMs",
+          "🧠",
+          "An LLM is a language pattern engine. It does not store facts like a database and does not guarantee truth.",
+          [
+            [
+              "Foundation Model",
+              "Why: training a large general model once is more reusable than building every model from zero.",
+              "A foundation model is broadly pretrained and adapted through prompting, RAG, tools, or fine-tuning.",
+              "Pretraining → Base Model → Adaptation → Application",
+              "Text, image, audio, multimodal, and embedding models serve different purposes.",
+            ],
+            [
+              "Large Language Model",
+              "Why: one model can handle many language tasks through instructions.",
+              "An LLM predicts token sequences from context using a transformer-based neural network.",
+              "Prompt Tokens → Transformer → Next-token Probabilities → Response",
+              "Generation is probabilistic. A fluent answer can still be wrong.",
+            ],
+            [
+              "Tokens",
+              "Why: models need numeric units rather than raw words.",
+              "Tokens are the pieces of text processed by the model.",
+              "Text → Tokenizer → Token IDs",
+              "Token usage affects context size, latency, and cost. A token is not always a whole word.",
+            ],
+            [
+              "Transformer and Attention",
+              "Why: the model must understand relationships between words across a sequence.",
+              "Attention lets each token weigh other relevant tokens in context.",
+              "Tokens → Attention Layers → Contextual Representation",
+              "This architecture supports strong sequence modeling and efficient parallel training.",
+            ],
+            [
+              "Context Window",
+              "Why: the model needs a working area containing instructions and information.",
+              "The context window is the token space available during one interaction.",
+              "System + History + Retrieved Evidence + User + Output",
+              "Long context is not permanent memory. Too much irrelevant context can reduce quality and increase cost.",
+            ],
+            [
+              "Hallucination",
+              "Why it happens: the model predicts plausible language rather than checking a guaranteed truth database.",
+              "A hallucination is an unsupported or incorrect model-generated claim.",
+              "Missing/Weak Evidence → Plausible Generation → Wrong Answer",
+              "Reduce it with grounding, citations, tool validation, constrained output, evaluation, and human review.",
+            ],
+          ],
+        ],
+        [
+          "Prompting and Model Adaptation",
+          "✍️",
+          "A prompt is a job ticket. Better instructions improve behavior, but prompts cannot provide missing trusted knowledge by themselves.",
+          [
+            [
+              "Prompt Engineering",
+              "Why: ambiguous instructions produce inconsistent output.",
+              "Prompt engineering defines the goal, context, constraints, examples, and required format.",
+              "Role + Task + Context + Rules + Format",
+              "Separate instructions from untrusted data and request structured output for automation.",
+            ],
+            [
+              "Zero-shot and Few-shot",
+              "Why: some tasks need examples to establish the expected pattern.",
+              "Zero-shot uses instructions only; few-shot adds demonstrations.",
+              "Task → Output | Examples + Task → Patterned Output",
+              "Examples help with classification boundaries, tone, and output structure.",
+            ],
+            [
+              "Structured Output",
+              "Why: free text is difficult for software to process safely.",
+              "Structured output asks the model to produce data matching a schema.",
+              "Model → JSON Schema → Validator → Application",
+              "Always validate required fields, types, allowed values, and authorization before use.",
+            ],
+            [
+              "Fine-tuning",
+              "Why: a stable task may need specialized style or behavior that prompting cannot reliably provide.",
+              "Fine-tuning updates model weights using curated examples.",
+              "Base Model + Training Examples → Tuned Model",
+              "Use RAG for changing knowledge. Use fine-tuning for repeatable behavior when evaluation proves value.",
+            ],
+          ],
+        ],
+        [
+          "Embeddings and Vector Databases",
+          "🗺️",
+          "Embeddings turn meaning into coordinates. A vector database is a semantic library that finds nearby meanings.",
+          [
+            [
+              "Embedding",
+              "Why: exact words miss synonyms and related meanings.",
+              "An embedding is a numeric vector representing semantic characteristics.",
+              "Text/Image → Embedding Model → Vector",
+              "Use the same compatible embedding space for indexed content and search queries.",
+            ],
+            [
+              "Vector Database",
+              "Why: search must quickly find nearby vectors at application scale.",
+              "A vector database stores embeddings, metadata, source references, and similarity indexes.",
+              "Vector + Metadata + Source ID → Index",
+              "It supports semantic search, recommendations, clustering, memory retrieval, and RAG.",
+            ],
+            [
+              "Keyword, Vector, and Hybrid Search",
+              "Why: exact identifiers and semantic concepts need different retrieval methods.",
+              "Keyword matches terms, vector search matches meaning, and hybrid combines both.",
+              "Keyword Results + Vector Results → Rank/Rerank",
+              "Hybrid retrieval often gives better coverage than relying on only one method.",
+            ],
+            [
+              "Chunking",
+              "Why: entire documents are too large and imprecise for retrieval.",
+              "Chunking divides content into meaningful searchable units.",
+              "Document → Sections → Chunks → Embeddings",
+              "Chunk size, overlap, headings, tables, and metadata strongly affect retrieval quality.",
+            ],
+            [
+              "Similarity Search",
+              "Why: the system needs the content closest in meaning to the query.",
+              "Similarity search finds nearest vectors using an appropriate distance metric.",
+              "Query Vector ↔ Indexed Vectors → Top Matches",
+              "A similarity score is not a truth score. Results still need ranking, filtering, and evaluation.",
+            ],
+          ],
+        ],
+        [
+          "RAG and Grounding",
+          "📚",
+          "RAG gives the model an open book. It retrieves trusted evidence before asking the model to answer.",
+          [
+            [
+              "Retrieval-Augmented Generation",
+              "Why: model training may be outdated and lacks private organizational knowledge.",
+              "RAG retrieves relevant content and supplies it as model context.",
+              "Question → Retrieve → Ground Prompt → Generate → Cite",
+              "RAG changes supplied knowledge without changing model weights.",
+            ],
+            [
+              "RAG Ingestion",
+              "Why: source content must be prepared before reliable retrieval.",
+              "Ingestion loads, parses, cleans, chunks, embeds, and indexes content.",
+              "Sources → Parse → Chunk → Embed → Index",
+              "Preserve permissions, source links, versions, deletion, document structure, and freshness.",
+            ],
+            [
+              "RAG Query Flow",
+              "Why: raw user wording may not match the source wording.",
+              "The query flow can rewrite, search, filter, rerank, assemble context, and generate.",
+              "Question → Rewrite → Search → Filter → Rerank → Answer",
+              "Diagnose retrieval separately from generation. The model cannot cite evidence that was never retrieved.",
+            ],
+            [
+              "Classic RAG vs Agentic RAG",
+              "Why: complex questions may need research planning and multiple searches.",
+              "Classic RAG performs a direct retrieval; agentic RAG decomposes the problem into subqueries.",
+              "Classic: Query→Search | Agentic: Plan→Parallel Subqueries→Synthesis",
+              "Agentic retrieval can improve coverage but increases latency, cost, and operational complexity.",
+            ],
+            [
+              "RAG Evaluation",
+              "Why: a good-looking answer can hide poor retrieval or unsupported synthesis.",
+              "Evaluate retrieval relevance, groundedness, answer relevance, citation correctness, latency, and cost.",
+              "Test Set → Retrieval Metrics + Generation Metrics + Human Review",
+              "Use representative questions, difficult cases, security tests, and regression gates.",
+            ],
+          ],
+        ],
+        [
+          "Tools, Skills, APIs, and MCP",
+          "🔌",
+          "The model is the brain, a tool is a hand, a skill is a playbook, an API is a doorway, and MCP is a standardized plug.",
+          [
+            [
+              "Tool",
+              "Why: a model cannot safely perform real-world actions by text generation alone.",
+              "A tool is an application-controlled function or API an agent may request.",
+              "Model Requests Tool → App Validates → Tool Executes → Result",
+              "The application enforces identity, authorization, validation, retries, side-effect control, and auditing.",
+            ],
+            [
+              "Skill",
+              "Why: complex work needs a repeatable method, not only a raw function.",
+              "A skill packages instructions, a workflow, tool usage, inputs, outputs, and guardrails for a reusable capability.",
+              "Goal → Skill Playbook → Tools → Verified Result",
+              "A strong skill is narrow, typed, testable, observable, permission-aware, and versioned.",
+            ],
+            [
+              "Plugin",
+              "Why: related capabilities need a reusable distribution boundary.",
+              "A plugin bundles tools, skills, prompts, or connectors for a host or agent environment.",
+              "Plugin Package → Capability Discovery → Use",
+              "The exact meaning varies by platform, so rely on that platform’s contract.",
+            ],
+            [
+              "API",
+              "Why: software systems need controlled communication.",
+              "An API exposes operations and data through a defined contract.",
+              "Client → Request → API → Response",
+              "APIs remain the underlying business-service boundary even when an agent accesses them through a tool.",
+            ],
+            [
+              "MCP",
+              "Why: every agent integration should not require a completely custom adapter.",
+              "Model Context Protocol standardizes how AI clients discover and use tools, resources, and prompts from servers.",
+              "MCP Client ↔ Protocol ↔ MCP Server {Tools, Resources, Prompts}",
+              "MCP is not automatic security. Authentication, authorization, consent, data controls, and audit still apply.",
+            ],
+            [
+              "MCP vs API",
+              "Why: agents need discoverable, model-friendly capabilities on top of business services.",
+              "An API is a general software contract; MCP is an agent-oriented protocol that can expose curated capabilities.",
+              "Agent → MCP Server → Existing API/System",
+              "An MCP server often wraps existing APIs. It should expose safe, focused operations rather than every backend endpoint.",
+            ],
+          ],
+        ],
+        [
+          "AI Agents",
+          "🤖",
+          "A chatbot answers. An agent pursues a goal through a controlled loop of reasoning, tools, observations, and decisions.",
+          [
+            [
+              "AI Agent",
+              "Why: some tasks require multiple steps, external data, and actions.",
+              "An AI agent combines a model, instructions, context, tools, state, and control logic to pursue a goal.",
+              "Goal → Decide → Act → Observe → Continue/Finish",
+              "Autonomy must be bounded by permissions, budgets, stop rules, and human oversight.",
+            ],
+            [
+              "Agentic Loop",
+              "Why: the correct next step may depend on the previous result.",
+              "The loop plans or decides, invokes a tool, observes the result, and updates the next action.",
+              "Goal → Plan → Tool → Observation → Update → Stop",
+              "Production loops need maximum steps, timeouts, retry rules, duplicate prevention, and escalation.",
+            ],
+            [
+              "Memory",
+              "Why: context windows are temporary and agents need useful state across steps or sessions.",
+              "Memory stores working state, summaries, user preferences, task history, or retrievable knowledge.",
+              "Working Memory + Conversation State + Long-term Store",
+              "Define consent, ownership, retention, deletion, sensitivity, retrieval quality, and freshness.",
+            ],
+            [
+              "Planning",
+              "Why: a complex goal must be divided into manageable actions.",
+              "Planning selects and orders steps based on goals, constraints, available tools, and observations.",
+              "Goal → Subtasks → Dependencies → Execution Plan",
+              "Prefer deterministic workflows for high-risk processes and use dynamic planning only when flexibility adds value.",
+            ],
+            [
+              "Reflection and Review",
+              "Why: the first answer or action may be incomplete.",
+              "A review step checks output against requirements, evidence, and policies before completion.",
+              "Draft → Critic/Validator → Revise or Finish",
+              "Review improves quality only if it has clear criteria and does not create endless loops.",
+            ],
+            [
+              "Human-in-the-loop",
+              "Why: high-impact or uncertain actions require accountable judgment.",
+              "A human checkpoint allows approval, editing, rejection, or escalation.",
+              "Agent Proposal + Evidence → Human Decision → Action",
+              "Show the intended action, evidence, risk, and consequences before asking for approval.",
+            ],
+          ],
+        ],
+        [
+          "Multi-Agent Systems",
+          "🤝",
+          "A multi-agent system is a specialist team. Use it only when specialization is better than one agent with tools.",
+          [
+            [
+              "When to Use Multiple Agents",
+              "Why: roles may need different tools, permissions, models, contexts, or parallel execution.",
+              "Multiple agents divide work among specialized responsibilities.",
+              "Coordinator → Researcher + Planner + Executor + Reviewer",
+              "Start with one agent. Add agents only when quality, ownership, security, or scalability improves enough to justify coordination cost.",
+            ],
+            [
+              "Supervisor Pattern",
+              "Why: one component must own delegation and the final result.",
+              "A supervisor routes tasks to specialists and synthesizes their outputs.",
+              "User → Supervisor → Specialists → Final Result",
+              "The supervisor needs clear delegation rules, budgets, conflict resolution, and failure handling.",
+            ],
+            [
+              "Sequential Handoff",
+              "Why: each stage depends on the previous stage’s artifact.",
+              "Agents pass typed outputs through an ordered workflow.",
+              "Research → Design → Execute → Review",
+              "Typed contracts and validation reduce ambiguity between agents.",
+            ],
+            [
+              "Parallel Specialists",
+              "Why: independent subtasks can reduce overall latency.",
+              "Several agents work concurrently and a coordinator merges results.",
+              "Task → A + B + C → Aggregate",
+              "Handle duplicate work, contradictory conclusions, partial failures, and evidence merging.",
+            ],
+            [
+              "Agent-to-Agent Communication",
+              "Why: independently hosted agents may need to collaborate.",
+              "Agent communication uses defined task, message, identity, status, and result contracts.",
+              "Agent A ↔ Typed Contract ↔ Agent B",
+              "Secure each boundary and maintain an auditable chain of responsibility.",
+            ],
+          ],
+        ],
+        [
+          "Safety, Evaluation, and Governance",
+          "🛡️",
+          "Reliable AI needs more than a good model. It needs evaluation, security, policy, monitoring, and accountable ownership.",
+          [
+            [
+              "Prompt Injection",
+              "Why it matters: untrusted content can imitate instructions.",
+              "Prompt injection attempts to manipulate the model or its tool use through malicious input.",
+              "Untrusted Data → Malicious Instruction → Unsafe Behavior",
+              "Separate data from instructions, restrict tools, validate actions, enforce authorization outside the model, and test adversarial cases.",
+            ],
+            [
+              "Responsible AI",
+              "Why: AI systems can create unfair, unsafe, private, opaque, or unaccountable outcomes.",
+              "Responsible AI applies fairness, reliability, privacy, security, inclusiveness, transparency, and accountability.",
+              "Principles → Controls → Tests → Monitoring → Ownership",
+              "Translate principles into concrete requirements, release gates, user disclosures, escalation, and incident response.",
+            ],
+            [
+              "Agent Evaluation",
+              "Why: final-answer quality alone cannot reveal a bad journey.",
+              "Evaluate outcome, reasoning trajectory, retrieval, tool selection, argument accuracy, safety, latency, and cost.",
+              "Scenario → Trace → Scores → Human Review → Regression Gate",
+              "Store reproducible test cases and compare every prompt, model, tool, or policy change.",
+            ],
+            [
+              "Red Teaming",
+              "Why: normal testing rarely covers deliberate misuse.",
+              "Red teaming probes prompt attacks, data leakage, harmful output, tool abuse, and excessive agency.",
+              "Attack Scenario → Weakness → Mitigation → Retest",
+              "Repeat after material changes to models, prompts, retrieval, tools, permissions, or data.",
+            ],
+            [
+              "Authorization and Least Privilege",
+              "Why: a model should never decide whether it is allowed to act.",
+              "The identity and service layer enforce access independently of model output.",
+              "User/Agent Identity → Policy → Scoped Credential → Tool",
+              "Use task-specific permissions, short-lived credentials, approval for sensitive actions, and complete audit logs.",
+            ],
+          ],
+        ],
+        [
+          "Production AI Systems",
+          "📡",
+          "A production agent is a governed distributed system, not merely a prompt and model.",
+          [
+            [
+              "End-to-End Architecture",
+              "Why: quality depends on every layer around the model.",
+              "A production AI system combines experience, orchestration, model, knowledge, tools, policy, telemetry, and human operations.",
+              "UI/API → Orchestrator → Model + RAG + Tools → Guardrails → Telemetry",
+              "Version models, prompts, indexes, tools, schemas, policies, and evaluations together.",
+            ],
+            [
+              "Observability",
+              "Why: failures can occur in retrieval, generation, tool execution, policy, or external dependencies.",
+              "Observability records traces, metrics, logs, model usage, retrieval evidence, and tool outcomes.",
+              "User Request → Correlated Trace Across All Components",
+              "Redact secrets and sensitive content while preserving enough evidence for debugging and audit.",
+            ],
+            [
+              "Cost and Latency",
+              "Why: agent loops and large context can create unpredictable resource use.",
+              "Control cost and latency through routing, caching, concise context, parallel I/O, and budgets.",
+              "Classify Task → Choose Model → Execute Within Budget",
+              "Measure quality against total cost and stop when additional steps have low expected value.",
+            ],
+            [
+              "Safe Deployment",
+              "Why: prompt or tool changes can alter behavior without code changes.",
+              "Release through offline evaluation, security review, shadow testing, limited rollout, monitoring, and rollback.",
+              "Evaluate → Review → Canary → Monitor → Expand/Rollback",
+              "Treat prompts, policies, knowledge, and tool definitions as release artifacts.",
+            ],
+            [
+              "Incident Response",
+              "Why: AI failures need fast containment and evidence preservation.",
+              "AI incident response limits impact, disables unsafe capability, preserves traces, identifies cause, and validates recovery.",
+              "Detect → Contain → Investigate → Recover → Learn",
+              "Prepare kill switches, tool revocation, rollback, communication, and post-incident evaluation updates.",
+            ],
+          ],
+        ],
+      ];
+      const nav = document.getElementById("nav"),
+        content = document.getElementById("content");
+      function render() {
+        content.innerHTML = "";
+        DATA.forEach((s, idx) => {
+          let sec = document.createElement("section");
+          sec.className = "section";
+          sec.id = "s" + idx;
+          sec.innerHTML =
+            "<h2>" +
+            s[1] +
+            " " +
+            s[0] +
+            '</h2><p class="muted">' +
+            s[2] +
+            '</p><div class="grid"></div>';
+          s[3].forEach((x) => {
+            let c = document.createElement("article");
+            c.className = "card";
+            c.innerHTML =
+              "<h3>" +
+              x[0] +
+              '</h3><div class="why">' +
+              x[1] +
+              '</div><div class="plain"><b>What it is:</b> ' +
+              x[2] +
+              '</div><div class="diagram">' +
+              x[3] +
+              '</div><div class="work"><b>How it works / where it fits:</b> ' +
+              x[4] +
+              "</div>";
+            sec.querySelector(".grid").appendChild(c);
+          });
+          content.appendChild(sec);
+        });
+        buildNav();
+      }
+      function buildNav() {
+        nav.innerHTML = "";
+        DATA.forEach((s, i) => {
+          let b = document.createElement("button");
+          b.textContent = s[1] + " " + s[0];
+          b.onclick = () =>
+            document
+              .getElementById("s" + i)
+              .scrollIntoView({ behavior: "smooth" });
+          nav.appendChild(b);
+        });
+      }
+      render();
+      search.oninput = (e) => {
+        let q = e.target.value.toLowerCase();
+        document
+          .querySelectorAll(".card")
+          .forEach((c) =>
+            c.classList.toggle("hide", !c.innerText.toLowerCase().includes(q)),
+          );
+        document
+          .querySelectorAll(".section")
+          .forEach((s) =>
+            s.classList.toggle("hide", !s.querySelector(".card:not(.hide)")),
+          );
+      };
+    </script>
+    <script src="subject-toggles.js" defer></script>
+    <script src="app-protection.js" defer></script>
+    </body>
+</html>
